@@ -128,6 +128,21 @@ SIMPLE_JWT = {
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Enterprise Workflow API",
+        default_version='v1',
+        description="API documentation for project",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # 👈 ADD THIS
+    ...
+]
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -144,6 +159,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'accounts.User'
