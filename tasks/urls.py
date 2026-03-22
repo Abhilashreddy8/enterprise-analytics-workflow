@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import CreateTaskView, UpdateTaskStatusView, ReassignTaskView, UserDashboardView, AdminDashboardView, UploadExcelView, DashboardAPIView
+from .views import CreateTaskView, UpdateTaskStatusView, ReassignTaskView, UserDashboardView, AdminDashboardView, UploadExcelView, DashboardAPIView, TaskListAPIView
+
 
 
 urlpatterns = [
@@ -10,4 +11,5 @@ urlpatterns = [
     path('dashboard/admin/', AdminDashboardView.as_view()),
     path('upload/', UploadExcelView.as_view()),
     path('dashboard/', DashboardAPIView.as_view(), name='dashboard'),
+    path('tasks/', TaskListAPIView.as_view()),
 ]
