@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os # imported
 import dj_database_url
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--($y_%k63%wp=a6(n6o&d0a)9cr$uh8*+s7bz%)6(_d#07kh_q'
+#SECRET_KEY = 'django-insecure--($y_%k63%wp=a6(n6o&d0a)9cr$uh8*+s7bz%)6(_d#07kh_q'
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = ["*"]#["enterprise-analytics-workflow.onrender.com"]
 
 
 # Application definition
@@ -42,9 +51,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'tasks',
     'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,7 +67,10 @@ MIDDLEWARE = [
     
 ]
 
-
+CORS_ALLOW_ALL_ORIGINS = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
 
 ROOT_URLCONF = 'config.urls'
 
@@ -160,5 +174,19 @@ SWAGGER_SETTINGS = {
             'name': 'Authorization',
             'in': 'header',
         }
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
     },
 }
