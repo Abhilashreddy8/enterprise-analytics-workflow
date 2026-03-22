@@ -19,7 +19,11 @@ from .models import HoldHistory
 
 import pandas as pd
 from django.contrib.auth import get_user_model
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
+from .models import Task
 
 class UpdateTaskStatusView(APIView):
     permission_classes = [IsAuthenticated]
@@ -184,3 +188,22 @@ class UploadExcelView(APIView):
 
 
 
+
+
+class DashboardAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        total_tasks = Task.objects.count()
+        completed_tasks = Task.objects.filter(status="COMPLETED").count()
+        pending_tasks = Task.objects.filter(status="PENDING").count()
+        held_tasks = Task.objects.filter(status="HOLD").count()
+
+        data = {
+            "total_tasks": total_tasks,
+            "completed_tasks": completed_tasks,
+            "pending_tasks": pending_tasks,
+            "held_tasks": held_tasks,
+        }
+
+        return Response(data)
