@@ -6,6 +6,7 @@ djangorestframework==3.17.0
 djangorestframework_simplejwt==5.5.1
 drf-yasg==1.21.15
 et_xmlfile==2.0.0
+gunicorn==25.1.0
 inflection==0.5.1
 iniconfig==2.3.0
 numpy==2.4.3
