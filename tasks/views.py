@@ -25,6 +25,24 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Task
 
+from rest_framework.generics import ListAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import TaskSerializer
+
+
+class TaskListAPIView(ListAPIView):
+    serializer_class = TaskSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status', 'assigned_to']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role == "ADMIN":
+            return Task.objects.all()
+
+        return Task.objects.filter(assigned_to=user)
+
 class UpdateTaskStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -190,20 +208,31 @@ class UploadExcelView(APIView):
 
 
 
+from django.core.cache import cache
+
 class DashboardAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        total_tasks = Task.objects.count()
-        completed_tasks = Task.objects.filter(status="COMPLETED").count()
-        pending_tasks = Task.objects.filter(status="PENDING").count()
-        held_tasks = Task.objects.filter(status="HOLD").count()
+        cache_key = "dashboard_data"
 
-        data = {
-            "total_tasks": total_tasks,
-            "completed_tasks": completed_tasks,
-            "pending_tasks": pending_tasks,
-            "held_tasks": held_tasks,
-        }
+        # ✅ Check cache first
+        data = cache.get(cache_key)
+
+        if not data:
+            total_tasks = Task.objects.count()
+            completed_tasks = Task.objects.filter(status="COMPLETED").count()
+            pending_tasks = Task.objects.filter(status="PENDING").count()
+            held_tasks = Task.objects.filter(status="HOLD").count()
+
+            data = {
+                "total_tasks": total_tasks,
+                "completed_tasks": completed_tasks,
+                "pending_tasks": pending_tasks,
+                "held_tasks": held_tasks,
+            }
+
+            # ✅ Store in cache (for 60 seconds)
+            cache.set(cache_key, data, timeout=60)
 
         return Response(data)

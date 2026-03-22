@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'tasks',
     'drf_yasg',
     'corsheaders',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-dashboard-cache"
+    }
+}
 
 CORS_ALLOW_ALL_ORIGINS = True
 SECURE_BROWSER_XSS_FILTER = True
@@ -133,9 +141,20 @@ AUTH_PASSWORD_VALIDATORS = [
 from datetime import timedelta
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 SIMPLE_JWT = {
