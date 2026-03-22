@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts', # created the app
     'rest_framework',
     'tasks',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
